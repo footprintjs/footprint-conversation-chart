@@ -5,7 +5,7 @@ opens it as a source: facts for the record, words read again from where they cam
 
 `openSource(conversation, {cwd, window})` (async) → `{facts, window(i), cited(ids), all(), ordinalOf(id), idOf(k)}`;
 `window`, `cited` and `all` are async, as a changed file is read again. The conversation is `{messages}`, `{file}` (a JSON
-list) or `{session}` (a chatbot session file, one JSON record per line, read a line at a time with `node:readline` and the
+list) or `{session}` (a chatbot session file, one JSON record per line, read a line at a time (a line too long is dropped as it streams past, never held) and the
 session reader; `session-reader.mjs` is the one door to it, a vendored copy until footprint-story 0.8.0 ships it). `facts`: message count, bytes, sha256,
 the window size, how many messages were clipped, and the windows as message offsets `{from, to, bytes}`.
 

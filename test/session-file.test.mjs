@@ -87,3 +87,11 @@ test('a session file changed during the run is read again and refused unless its
   writeFileSync(file, sessionLines(CHAT.map((m) => ({...m, text: `${m.text} and more`}))));
   await assert.rejects(source.window(0), /changed during the run.*run again/);
 }));
+
+test('a line longer than the reader reads is dropped as it streams past, never held, and counted', async () => {
+  const {boundedLines} = await import('../src/story/read-source/files.mjs');
+  async function* chunks() { yield 'ok\r\n' + 'x'.repeat(10); yield 'x'.repeat(10) + '\nafter'; }
+  const out = [];
+  for await (const line of boundedLines(chunks(), 15)) out.push(line);
+  assert.deepEqual(out, ['ok', null, 'after']);
+});

@@ -40,12 +40,13 @@ test('a drawer that wraps a film reader gives the check the film reader\'s own p
   assert.deepEqual(problems, [{at: 'closing', message: 'has a brace, which a film would read as its own script: take it out'}]);
 });
 
-test('a drawer with no reader of its own draws every board that reads; a shape it does not draw is not asked', async () => {
+test('a drawer with no reader of its own draws every board that reads; a shape it does not draw is a problem, its reader not asked', async () => {
   const braced = {...STORY, closing: 'A {brace} is a script mark.'};
   assert.equal((await checkBoard(braced, CHAT, drawerOf({shapes: ['what-we-found']}))).facts.problemCount, 0);
   let asked = 0;
   const other = drawerOf({shapes: ['told-twice'], problemsOf: () => { asked++; return [{at: 'closing', message: 'no'}]; }});
-  assert.equal((await checkBoard(braced, CHAT, other)).facts.problemCount, 0);
+  const {problems} = await checkBoard(braced, CHAT, other);
+  assert.deepEqual(problems, [{at: 'shape', message: 'is not a shape this tool draws: write the board as told-twice'}]);
   assert.equal(asked, 0);
 });
 

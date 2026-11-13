@@ -7,12 +7,13 @@
 import {readStoryboard, storyboardFixBriefs, storyboardProblems} from 'footprint-story/storyboard';
 import {drawerProblems} from './drawer.mjs';
 
-/** Every problem of the board: the storyboard's own, then, once it reads and is a shape the drawer draws, the drawer's. */
+/** Every problem of the board: the storyboard's own; once it reads, a shape the drawer does not draw; then the drawer's own. */
 export async function problemsOf(board, conversation, drawer) {
   const problems = storyboardProblems(board, {conversation});
   if (problems.length) return problems;
   const read = readStoryboard(board, {conversation});
-  if (!drawer.shapes.includes(read.shape)) return [];
+  // A board the drawer cannot draw is a problem of its own: skipping the drawer's reader for it would let the board pass.
+  if (!drawer.shapes.includes(read.shape)) return [{at: 'shape', message: `is not a shape this tool draws: write the board as ${drawer.shapes.join(' or ')}`}];
   return drawerProblems(drawer, read);
 }
 
