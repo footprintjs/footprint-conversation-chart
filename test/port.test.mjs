@@ -49,3 +49,15 @@ test('the driver is handed the brief and {stage}, never the chart\'s scope', asy
   assert.deepEqual(given, {stage: 'pick'});
   assert.ok(Object.isFrozen(given));
 });
+
+test('a retried brief says why the last answer was refused, in code\'s own words', async () => {
+  const {askWithTries} = await import('../src/story/port/ask.mjs');
+  const {brief, MalformedAnswer} = await import('../src/story/port/port.mjs');
+  const seen = [];
+  const run = {model: {answer: async (b) => { seen.push(b.instructions); return seen.length === 1 ? '[1]' : '{"ok":true}'; }}};
+  const read = (value) => { if (Array.isArray(value)) throw new MalformedAnswer('pick', 'not-object'); return value; };
+  const got = await askWithTries(run, brief('pick', 'Pick.', 'material'), read);
+  assert.deepEqual(got, {value: {ok: true}, tries: 2});
+  assert.equal(seen[0], 'Pick.');
+  assert.match(seen[1], /^Pick\.\nYour last answer was refused: the pick answer is not a JSON object/);
+});
