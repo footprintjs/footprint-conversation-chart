@@ -1,7 +1,7 @@
 /**
- * The one door to the chatbot-session reader. footprint-story 0.8.0 ships it as `sessionReader` from
- * `footprint-story/storyboard`; until then it is a vendored copy. When 0.8.0 is out, this line becomes
- *   export {sessionReader} from 'footprint-story/storyboard';   (with MOST_LINE: 2 ** 21 kept here)
- * the vendored file is deleted, and the dependency moves to ^0.8.0. Nothing else imports the reader.
+ * The one door to the chatbot-session reader: footprint-story's `sessionReader`, from `footprint-story/storyboard` (0.8.0).
+ * `MOST_LINE` is the longest line that reader reads (2 MB of UTF-16, its own MOST_LINE, which its door does not export):
+ * the file reader drops a longer line as it streams past, so it is never held. test/session-reader.test.mjs pins that the two agree.
  */
-export {MOST_LINE, sessionReader} from '../../vendor/session.js';
+export {sessionReader} from 'footprint-story/storyboard';
+export const MOST_LINE = 2 ** 21;

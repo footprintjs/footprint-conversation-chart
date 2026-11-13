@@ -11,6 +11,6 @@ First release: the conversation-to-storyboard chart, moved out of StoryReel so S
   for a host whose model is the calling assistant. One brief outstanding at a time; idle sessions end after `idleMs`
   (30 minutes by default).
 - `conversation: {session: path}`: a chatbot session file (one JSON record per line), read a line at a time inside
-  `cwd`. The session reader is a vendored copy of footprint-story's `sessionReader` until footprint-story 0.8.0 ships it;
-  then the dependency moves to `^0.8.0`.
+  `cwd` with footprint-story 0.8.0's `sessionReader`. A session still being written (the host's own) is read once, as it
+  stands; a line too long is dropped as it streams past, never held.
 - An empty conversation is refused up front, naming the fix (it used to fail inside the pick stage).

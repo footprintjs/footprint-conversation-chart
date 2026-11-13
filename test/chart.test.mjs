@@ -131,7 +131,7 @@ test('a long conversation is picked window by window, and no pick brief is large
 
 test('the chart reaches footprintjs through engine.mjs alone', () => {
   const root = fileURLToPath(new URL('../src/story/', import.meta.url));
-  const files = [...readdirSync(root, {recursive: true}).filter((f) => f.endsWith('.mjs')), '../index.mjs', '../vendor/session.js'];
+  const files = [...readdirSync(root, {recursive: true}).filter((f) => f.endsWith('.mjs')), '../index.mjs'];
   const importing = files.filter((f) => /from 'footprintjs/.test(readFileSync(path.join(root, f), 'utf8')));
   assert.deepEqual(importing, ['engine.mjs']);
 });
