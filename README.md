@@ -140,7 +140,7 @@ Each stage lives in its own folder under `src/story/`, with a small README; `cha
   failed", its original kept under a private symbol and handed to the caller as `cause` once the record is taken. A
   JSON parser's message, which quotes the text, is never used.
 - **Files stay inside `cwd`.** `file` and `session` are read by their real path (a link cannot lead out), must be
-  regular files, and are capped (32 MB for a JSON list, 256 MB for a session, which is read a line at a time). A file
+  regular files, and are capped (32 MB for a JSON list; 8 GB for a session, which is streamed a line at a time, a too-long line dropped as it passes). A file
   is read again only when its stat changes, and refused unless its words hash the same.
 - **Everything is bounded:** at most 5,000 messages, 200 windows a run, 1 MB an answer, 24 points, `mostFix` rounds,
   one brief outstanding per session and an idle timeout.

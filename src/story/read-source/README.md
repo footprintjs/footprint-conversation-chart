@@ -11,7 +11,7 @@ the window size, how many messages were clipped, and the windows as message offs
 
 **Threats**
 - A path out of the project, a link, a folder, a file too big: `files.mjs` reads only an in-project real path, a regular
-  file, at most 32 MB for a JSON list and 256 MB for a session. Tested for both kinds (`test/session-file.test.mjs`).
+  file, at most 32 MB for a JSON list and 8 GB for a session (streamed, so the bound is on time, not memory). Tested for both kinds (`test/session-file.test.mjs`).
 - A session's odd lines, tool calls and host notes: the reader skips and counts them; state gets one total, `skipped`,
   never the kinds (a kind is named by the file).
 - An empty conversation, or a session with nothing a person or the assistant said: refused, naming the fix.
