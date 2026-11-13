@@ -115,3 +115,29 @@ test('a run that fails rejects the waiting call with the run\'s own refusal, its
   assert.ok(error.record && error.cause);
   await assert.rejects(session.next(), (e) => e === error);
 });
+
+test('options the run needs are checked at once, and the session errors are exported', async () => {
+  const {storySession: start, SessionMisuse: Misuse, SessionEnded: Ended} = await import('../src/index.mjs');
+  assert.equal(typeof Misuse, 'function');
+  assert.equal(typeof Ended, 'function');
+  assert.throws(() => start({conversation: {messages: CHAT}, drawer: FILM_DRAWER, window: 5}), /a window is a whole number of bytes/);
+  assert.throws(() => start({conversation: null, drawer: FILM_DRAWER}), /give the conversation as/);
+});
+
+test('a non-text answer is refused before the brief is taken, and the brief still waits', async () => {
+  const session = storySession({conversation: {messages: CHAT}, drawer: FILM_DRAWER});
+  const {brief} = await session.next();
+  await assert.rejects(session.answer({not: 'text'}), (e) => e instanceof SessionMisuse && /JSON text/.test(e.message));
+  assert.deepEqual((await session.next()).brief, brief);
+  await session.cancel();
+});
+
+test('a cancel in the same tick as the first next() starts no run', async () => {
+  let read = 0;
+  const conversation = {get messages() { read++; return CHAT; }};
+  const session = storySession({conversation, drawer: FILM_DRAWER});
+  const step = session.next();
+  await session.cancel();
+  await assert.rejects(step, SessionEnded);
+  assert.ok(read <= 1, 'the conversation is not opened by a run that never started');
+});

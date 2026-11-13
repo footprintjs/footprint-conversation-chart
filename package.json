@@ -13,6 +13,14 @@
     "storyreel"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/footprintjs/footprint-conversation-chart.git"
+  },
+  "homepage": "https://github.com/footprintjs/footprint-conversation-chart#readme",
+  "bugs": {
+    "url": "https://github.com/footprintjs/footprint-conversation-chart/issues"
+  },
   "type": "module",
   "exports": {
     ".": {

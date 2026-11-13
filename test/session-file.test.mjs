@@ -78,14 +78,14 @@ test('a session with nothing a person or the assistant said is refused, naming t
   await assert.rejects(openSource({session: 'empty.jsonl'}, {cwd}), (e) => /holds no message a person or the assistant wrote/.test(e.message) && !e.message.includes('SECRETLINE'));
 }));
 
-test('a session file changed during the run is read again and refused unless its words hash the same', () => inFolder(async (cwd) => {
+test('a session still being written goes on: the run reads it once and keeps its own copy', () => inFolder(async (cwd) => {
   const file = path.join(cwd, 'session.jsonl');
   writeFileSync(file, sessionLines());
   const source = await openSource({session: 'session.jsonl'}, {cwd});
-  writeFileSync(file, `${sessionLines()}{"type":"summary"}\n`);   // a new stamp, the same words: hashed, and accepted
-  assert.equal((await source.window(0)).length, CHAT.length);
-  writeFileSync(file, sessionLines(CHAT.map((m) => ({...m, text: `${m.text} and more`}))));
-  await assert.rejects(source.window(0), /changed during the run.*run again/);
+  const first = await source.window(0);
+  writeFileSync(file, sessionLines(CHAT.map((m) => ({...m, text: `${m.text} and more`}))));   // the host goes on writing
+  assert.deepEqual(await source.window(0), first);
+  assert.equal(source.facts.messages, CHAT.length);
 }));
 
 test('a line longer than the reader reads is dropped as it streams past, never held, and counted', async () => {

@@ -24,3 +24,5 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: npm ci
       - run: npm test
+      - run: npx --yes publint@0.3.25 --strict
+      - run: npm pack --dry-run

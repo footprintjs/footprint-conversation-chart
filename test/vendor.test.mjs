@@ -9,7 +9,7 @@ import path from 'node:path';
 
 const src = fileURLToPath(new URL('../src/', import.meta.url));
 /** footprint-story src/storyboard/session.js at commit a907e70. */
-const UPSTREAM_SHA256 = '32e4641d31af0f230597483a153c6776bcadf8967f47c7b33fbbfb64a24d0cb9';
+const UPSTREAM_SHA256 = 'e82fb3b42cb77150a7c13c234cdda891984f42ea0158d1ffd09bca6a7dd76648';
 const HEADER_LINES = 4;
 
 test('the vendored reader says it is a temporary copy, and is the upstream file byte for byte below that', () => {

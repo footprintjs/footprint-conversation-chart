@@ -25,16 +25,23 @@ function inProject(file, what, cwd) {
   let existing = full;
   while (!existsSync(existing)) existing = path.dirname(existing);
   const real = realpathSync(existing);
-  if (real !== root && !real.startsWith(root + path.sep)) throw new Error(`${what} "${file}" is outside this project: run this from the folder that holds it`);
+  const prefix = root.endsWith(path.sep) ? root : root + path.sep;   // a root of '/' is its own prefix
+  if (real !== root && !real.startsWith(prefix)) throw new Error(`${what} "${file}" is outside this project: run this from the folder that holds it`);
   return full;
 }
 
-/** Where the file is and what it is, refused first and nothing read: its full path. `what`: 'conversation' or 'session'. */
+/**
+ * Where the file is and what it is, refused first and nothing read: its REAL path, so the stat and the read use the file
+ * the check passed, not a link swapped in after it. `what`: 'conversation' or 'session'.
+ */
 export function checkFile(file, what, cwd) {
   const full = inProject(file, what, cwd);
-  if (!existsSync(full) || !statSync(full).isFile()) throw new Error(`no ${what} file "${file}": name ${KIND[what]} in this project`);
-  if (statSync(full).size > MOST_FILE_BYTES[what]) throw new Error(`${what} "${file}" is too big: ${MOST_FILE_BYTES[what]} bytes is the most`);
-  return full;
+  if (!existsSync(full)) throw new Error(`no ${what} file "${file}": name ${KIND[what]} in this project`);
+  const real = realpathSync(full);
+  inProject(real, what, cwd);
+  if (!statSync(real).isFile()) throw new Error(`no ${what} file "${file}": name ${KIND[what]} in this project`);
+  if (statSync(real).size > MOST_FILE_BYTES[what]) throw new Error(`${what} "${file}" is too big: ${MOST_FILE_BYTES[what]} bytes is the most`);
+  return real;
 }
 
 /** A JSON file checked by checkFile: its value, or a refusal that does not quote it. */

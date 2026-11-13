@@ -52,12 +52,17 @@ async function loadMessages(conversation, cwd) {
   if (typeof name !== 'string') refuse(file ? 'give the conversation file as a path: {file: "chat.json"}' : 'give the session file as a path: {session: "session.jsonl"}');
   try {
     const full = checkFile(name, what, cwd);   // where it is, what it is: refused first, nothing read
+    // A session is read once, as it stands: it is often still being written (the host's own session grows while the run
+    // asks it), so the words read are the run's copy and later writes are not part of it. A JSON list is checked for change.
+    if (session) {
+      const read = await readSessionFile(full, name);
+      if (!read.messages.length) refuse(`the session file "${name}" holds no message a person or the assistant wrote: name a session with a conversation in it`);
+      return {messages: [...read.messages], skipped: Object.values(read.left).reduce((n, count) => n + count, 0)};
+    }
     const before = stampOf(full);
-    const read = file ? {messages: readJsonFile(full, name)} : await readSessionFile(full, name);
+    const read = {messages: readJsonFile(full, name)};
     if (stampOf(full) !== before) refuse(`the ${what} file changed while it was read: run again once nothing writes to it`);
-    if (session && !read.messages.length) refuse(`the session file "${name}" holds no message a person or the assistant wrote: name a session with a conversation in it`);
-    const skipped = session ? Object.values(read.left).reduce((n, count) => n + count, 0) : undefined;
-    return {messages: file ? read.messages : [...read.messages], stamp: before, full, ...(session ? {skipped} : {})};
+    return {messages: read.messages, stamp: before, full};
   } catch (error) {
     if (error instanceof StoryRefusal) throw error;
     // the file helpers' refusals name the file and the fix in their own words, and never quote the file
@@ -116,7 +121,8 @@ export function clipMessage(message, most) {
 
 /**
  * The source: {facts, window(i), cited(ids), all(), ordinalOf(id), idOf(k)}. `facts` is all the record ever holds of it.
- * Every read of a file checks its words are still the ones counted: a file changed during the run is refused, not read.
+ * Every read of a JSON file checks its words are still the ones counted: a file changed during the run is refused, not read.
+ * A session is the run's copy from its one read, so a session still being written goes on.
  * `window`, `cited` and `all` are async (a changed file is read again); `ordinalOf` and `idOf` read working memory only.
  */
 export async function openSource(conversation, {cwd = process.cwd(), window = WINDOW_BYTES} = {}) {

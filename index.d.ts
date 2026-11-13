@@ -128,6 +128,20 @@ export interface StoryRefusal extends Error {
   cause?: unknown;
 }
 
+/** A session call made out of turn (an answer with no brief waiting, a second call while one waits, a non-text answer): the session goes on. */
+export declare class SessionMisuse extends Error implements StoryRefusal {
+  readonly name: 'SessionMisuse';
+  record?: StoryRecord;
+  cause?: unknown;
+}
+
+/** The session has ended (idle past `idleMs`, or cancelled): start a new one. Every later call gets the same refusal. */
+export declare class SessionEnded extends Error implements StoryRefusal {
+  readonly name: 'SessionEnded';
+  record?: StoryRecord;
+  cause?: unknown;
+}
+
 /** Run the chart. Rejects with a StoryRefusal (its `record` kept) when a stage or the model fails. */
 export function storyFromConversation(options: StoryFromConversationOptions): Promise<StoryResult>;
 

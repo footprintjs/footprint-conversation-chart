@@ -33,6 +33,7 @@ const BUSY = 'a call is already waiting for the session\'s next step: await it b
 const DONE = 'the session has ended and its result was given: start a new session to run again';
 const IDLE = (ms) => `the session waited ${ms} ms for the host and ended: start a new session`;
 const CANCELLED = 'the session was cancelled: start a new session to run again';
+const NOT_TEXT = 'an answer is JSON text: answer the brief with the JSON it describes, as a string';
 
 /**
  * The session over a run: `start(driver)` runs the chart with this driver as its model and returns the run's promise.
@@ -78,7 +79,8 @@ export function stepSession(start, {idleMs = IDLE_MS} = {}) {
     started = true;
     clear();
     const step = wait();
-    settled = Promise.resolve().then(() => start(driver)).then((result) => end({value: {result}}), (error) => end({error}));
+    // A cancel in the same tick as this first next() ends the session before the run starts: nothing is read.
+    settled = Promise.resolve().then(() => (outcome ? undefined : start(driver))).then((result) => end({value: {result}}), (error) => end({error}));
     return step;
   }
 
@@ -86,6 +88,8 @@ export function stepSession(start, {idleMs = IDLE_MS} = {}) {
     if (outcome) return outcome.error ? Promise.reject(outcome.error) : Promise.reject(new SessionMisuse(DONE));
     if (waiter) return Promise.reject(new SessionMisuse(BUSY));
     if (!asking) return Promise.reject(new SessionMisuse(NO_BRIEF));
+    // Refused before the brief is taken: a non-text answer would spend one of the stage's tries and give no word why.
+    if (typeof text !== 'string') return Promise.reject(new SessionMisuse(NOT_TEXT));
     const a = asking;
     asking = null;
     clear();

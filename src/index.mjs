@@ -22,9 +22,10 @@ import {stepSession} from './story/port/step.mjs';
 import {StoryRefusal, originalOf} from './story/refusal.mjs';
 import {drawerOf} from './story/check/drawer.mjs';
 import {MOST_FIX} from './story/check/stage.mjs';
-import {WINDOW_BYTES} from './story/read-source/source.mjs';
+import {LEAST_WINDOW_BYTES, WINDOW_BYTES} from './story/read-source/source.mjs';
 
 export {inProcess};
+export {SessionEnded, SessionMisuse} from './story/port/step.mjs';
 
 const MOST_ROUNDS = 10;
 const SHAPES = new Set(storyShapes().map((s) => s.name));
@@ -35,6 +36,8 @@ function inputOf({conversation, model, drawer, shape, window = WINDOW_BYTES, mos
   const drawn = drawerOf(drawer);
   if (shape !== undefined && !SHAPES.has(shape)) throw new TypeError(`no shape "${shape}": the shapes are ${[...SHAPES].join(', ')}, or leave shape out`);
   if (!Number.isInteger(mostFix) || mostFix < 0 || mostFix > MOST_ROUNDS) throw new RangeError(`mostFix is a whole number of fix rounds from 0 to ${MOST_ROUNDS}: give one, or leave it out for ${MOST_FIX}`);
+  if (!Number.isInteger(window) || window < LEAST_WINDOW_BYTES) throw new RangeError(`a window is a whole number of bytes, ${LEAST_WINDOW_BYTES} at the least: give window as one, or leave it out for ${WINDOW_BYTES}`);
+  if (conversation === null || typeof conversation !== 'object') throw new TypeError('give the conversation as {session: "session.jsonl"}, {file: "chat.json"} or {messages: [{id, text}]}');
   if (typeof cwd !== 'string') throw new TypeError('cwd is the folder a conversation file is read in, as a path: give one, or leave it out for this process\'s own');
   return {conversation, shape, drawer: drawn, window, mostFix, cwd};
 }
@@ -83,4 +86,4 @@ export function storySession(options = {}) {
 }
 
 /** The chart, drawn as Mermaid text from the real chart (nothing runs). */
-export const storyMermaid = () => mermaidOf(buildChart(storyWiring(runOf(inputOf({model: UNSET, drawer: {shapes: [...SHAPES].slice(0, 1)}}), null))));
+export const storyMermaid = () => mermaidOf(buildChart(storyWiring(runOf(inputOf({model: UNSET, conversation: {messages: []}, drawer: {shapes: [...SHAPES].slice(0, 1)}}), null))));
