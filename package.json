@@ -1,0 +1,48 @@
+{
+  "name": "footprint-conversation-chart",
+  "version": "0.1.0",
+  "description": "A conversation in, a checked storyboard out: a footprintjs chart that picks, writes, checks and fixes one piece at a time, with a record that says why, for any tool that draws a storyboard.",
+  "keywords": [
+    "storyboard",
+    "conversation",
+    "footprintjs",
+    "flowchart",
+    "llm",
+    "mcp",
+    "storydeck",
+    "storyreel"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./src/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "types": "./index.d.ts",
+  "files": [
+    "src",
+    "index.d.ts",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test \"test/**/*.test.mjs\""
+  },
+  "peerDependencies": {
+    "footprintjs": "^12.0.0"
+  },
+  "dependencies": {
+    "footprint-story": "^0.7.0"
+  },
+  "devDependencies": {
+    "footprintjs": "12.1.0"
+  }
+}
