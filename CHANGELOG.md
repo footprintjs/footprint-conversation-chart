@@ -4,6 +4,9 @@
 
 First release: the conversation-to-storyboard chart, moved out of StoryReel so StoryDeck and StoryReel share it.
 
+- Needs `footprintjs` ^14 as a peer (which needs `foottrace` ^2.1 beside it), and comes with `footprint-story` ^0.9: its
+  brief now tells the model how many entries each list holds, so a first answer is refused less often.
+
 - `storyFromConversation({conversation, model, drawer, shape?, window?, mostFix?, cwd?})`, `inProcess(fn)` and
   `storyMermaid()`, as the chart had them, with one port changed: the tool that draws the board is now
   `drawer: {shapes, problemsOf?}` (replacing `drawable` and the built-in film reader). `drawer` is required.

@@ -45,12 +45,13 @@
     "test": "node --test \"test/**/*.test.mjs\""
   },
   "peerDependencies": {
-    "footprintjs": "^12.0.0"
+    "footprintjs": "^14.0.0"
   },
   "dependencies": {
-    "footprint-story": "^0.8.0"
+    "footprint-story": "^0.9.0"
   },
   "devDependencies": {
-    "footprintjs": "12.1.0"
+    "footprintjs": "14.0.0",
+    "foottrace": "2.1.0"
   }
 }

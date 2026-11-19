@@ -15,7 +15,7 @@ shapes it draws and its own reader.
 npm install footprint-conversation-chart footprintjs
 ```
 
-Node 22 or later. `footprintjs` (^12) is a peer dependency; `footprint-story` comes with it.
+Node 22 or later. `footprintjs` (^14, which needs `foottrace` ^2.1 beside it) is a peer dependency; `footprint-story` comes with it.
 
 ## Example
 
